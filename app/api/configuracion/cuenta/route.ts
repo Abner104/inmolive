@@ -2,15 +2,29 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/db/prisma";
 
-async function getUserId() {
+async function getOrCreateUser() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  return user?.id ?? null;
+  if (!user) return null;
+
+  const monedaDefault = (user.user_metadata?.monedaDefault ?? "CLP") as "CLP" | "USD" | "DOP";
+  await prisma.user.upsert({
+    where: { id: user.id },
+    update: { monedaDefault },
+    create: {
+      id: user.id,
+      email: user.email!,
+      name: user.user_metadata?.name ?? null,
+      monedaDefault,
+    },
+  });
+
+  return user.id;
 }
 
 // GET /api/configuracion/cuenta — devuelve todas las cuentas del usuario
 export async function GET() {
-  const userId = await getUserId();
+  const userId = await getOrCreateUser();
   if (!userId) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 
   const [cuentas, user] = await Promise.all([
@@ -23,7 +37,7 @@ export async function GET() {
 
 // POST /api/configuracion/cuenta — guarda o actualiza una cuenta por moneda
 export async function POST(req: NextRequest) {
-  const userId = await getUserId();
+  const userId = await getOrCreateUser();
   if (!userId) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 
   const body = await req.json();
