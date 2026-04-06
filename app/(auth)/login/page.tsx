@@ -44,7 +44,7 @@ export default function LoginPage() {
             width={240}
             height={160}
             unoptimized
-            className="object-contain"
+            className="object-contain brightness-0 dark:brightness-100"
             style={{ height: 140, width: "auto" }}
           />
           <p className="text-sm text-muted-foreground">Ingresá a tu cuenta</p>

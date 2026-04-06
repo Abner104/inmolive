@@ -90,8 +90,8 @@ export default function HomePage() {
             width={480}
             height={320}
             unoptimized
-            className="object-contain object-contain"
-            style={{ height: 110, width: "auto" }}
+            className="object-contain"
+            style={{ height: 180, width: "auto" }}
           />
         </motion.div>
 
