@@ -44,3 +44,5 @@ baileys_auth/
 next-env.d.ts
 
 /lib/generated/prisma
+
+.vercel
