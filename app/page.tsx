@@ -33,29 +33,8 @@ const features = [
 ];
 
 const paises = [
-  {
-    flag: (
-      <svg viewBox="0 0 900 600" className="h-5 w-7 rounded-sm shadow-sm">
-        <rect width="900" height="600" fill="#d52b1e"/>
-        <rect width="900" height="400" fill="#fff"/>
-        <rect width="900" height="200" fill="#d52b1e"/>
-      </svg>
-    ),
-    nombre: "Chile",
-    moneda: "CLP",
-  },
-  {
-    flag: (
-      <svg viewBox="0 0 900 600" className="h-5 w-7 rounded-sm shadow-sm">
-        <rect width="900" height="600" fill="#002D62"/>
-        <rect width="900" height="400" fill="#fff"/>
-        <rect width="900" height="200" fill="#CE1126"/>
-        <rect x="0" y="200" width="300" height="200" fill="#002D62"/>
-      </svg>
-    ),
-    nombre: "Rep. Dominicana",
-    moneda: "DOP",
-  },
+  { flag: "/Chile.jpg", nombre: "Chile", moneda: "CLP" },
+  { flag: "/the Dominican Republic.jpg", nombre: "Rep. Dominicana", moneda: "DOP" },
 ];
 
 export default function HomePage() {
@@ -70,7 +49,7 @@ export default function HomePage() {
           width={180}
           height={120}
           unoptimized
-          className="object-contain brightness-0 invert"
+          className="object-contain object-contain"
           style={{ height: 38, width: "auto" }}
         />
         <div className="flex items-center gap-3">
@@ -91,9 +70,10 @@ export default function HomePage() {
           variants={fade} initial="hidden" animate="show" transition={{ duration: 0.5 }}
           className="mb-8 flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-5 py-2 text-sm text-slate-300 backdrop-blur-sm"
         >
-          {paises.map((p) => (
+          {paises.map((p, i) => (
             <span key={p.nombre} className="flex items-center gap-1.5">
-              {p.flag}
+              {i > 0 && <span className="text-slate-600">·</span>}
+              <Image src={p.flag} alt={p.nombre} width={28} height={20} unoptimized className="rounded-sm object-cover shadow-sm" style={{ width: 28, height: 20 }} />
               <span>{p.nombre}</span>
             </span>
           ))}
@@ -110,7 +90,7 @@ export default function HomePage() {
             width={480}
             height={320}
             unoptimized
-            className="object-contain brightness-0 invert"
+            className="object-contain object-contain"
             style={{ height: 110, width: "auto" }}
           />
         </motion.div>
