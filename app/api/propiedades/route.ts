@@ -8,7 +8,7 @@ async function getOrCreateUser() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
 
-  const monedaDefault = (user.user_metadata?.monedaDefault as string) ?? "CLP";
+  const monedaDefault = (user.user_metadata?.monedaDefault ?? "CLP") as "CLP" | "USD" | "DOP";
   await prisma.user.upsert({
     where: { id: user.id },
     update: { monedaDefault },
