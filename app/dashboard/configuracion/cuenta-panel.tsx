@@ -8,8 +8,9 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Landmark, Save } from "lucide-react";
+import { Landmark, Save, Star } from "lucide-react";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 type Moneda = "CLP" | "USD" | "DOP";
 
@@ -17,12 +18,10 @@ interface CuentaForm {
   titular: string;
   email: string;
   instrucciones: string;
-  // CLP / DOP
   banco: string;
   tipoCuenta: string;
   numeroCuenta: string;
   documento: string;
-  // USD
   metodoUSD: string;
   zellePhone: string;
   paypalEmail: string;
@@ -34,9 +33,18 @@ const EMPTY: CuentaForm = {
   metodoUSD: "banco", zellePhone: "", paypalEmail: "",
 };
 
+const MONEDAS: { value: Moneda; label: string }[] = [
+  { value: "CLP", label: "CLP — Peso chileno" },
+  { value: "USD", label: "USD — Dólar" },
+  { value: "DOP", label: "DOP — Peso dominicano" },
+];
+
 export function CuentaPanel() {
   const [monedaDefault, setMonedaDefault] = useState<Moneda>("CLP");
-  const [cuentas, setCuentas] = useState<Record<Moneda, CuentaForm>>({ CLP: { ...EMPTY }, USD: { ...EMPTY }, DOP: { ...EMPTY } });
+  const [activeTab, setActiveTab] = useState<Moneda>("CLP");
+  const [cuentas, setCuentas] = useState<Record<Moneda, CuentaForm>>({
+    CLP: { ...EMPTY }, USD: { ...EMPTY }, DOP: { ...EMPTY },
+  });
   const [loading, setLoading] = useState<Moneda | null>(null);
   const [fetching, setFetching] = useState(true);
 
@@ -44,7 +52,7 @@ export function CuentaPanel() {
     fetch("/api/configuracion/cuenta")
       .then((r) => r.json())
       .then(({ cuentas: data, monedaDefault: md }) => {
-        if (md) setMonedaDefault(md);
+        if (md) { setMonedaDefault(md as Moneda); setActiveTab(md as Moneda); }
         if (data) {
           const map = { CLP: { ...EMPTY }, USD: { ...EMPTY }, DOP: { ...EMPTY } } as Record<Moneda, CuentaForm>;
           for (const c of data) map[c.moneda as Moneda] = { ...EMPTY, ...c };
@@ -75,14 +83,14 @@ export function CuentaPanel() {
     }
   }
 
-  async function guardarMonedaDefault(v: Moneda) {
-    setMonedaDefault(v);
+  async function marcarPredeterminada(moneda: Moneda) {
+    setMonedaDefault(moneda);
     await fetch("/api/configuracion/cuenta", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ monedaDefault: v }),
+      body: JSON.stringify({ monedaDefault: moneda }),
     });
-    toast.success("Moneda predeterminada actualizada");
+    toast.success(`${moneda} establecida como moneda predeterminada`);
   }
 
   if (fetching) return (
@@ -105,32 +113,21 @@ export function CuentaPanel() {
         </p>
       </CardHeader>
       <CardContent className="space-y-5">
-
-        {/* Moneda default */}
-        <div className="rounded-2xl bg-muted/50 p-4 space-y-1.5">
-          <Label>Moneda predeterminada para unidades nuevas</Label>
-          <Select value={monedaDefault} onValueChange={(v) => guardarMonedaDefault(v as Moneda)}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="CLP">CLP — Peso chileno</SelectItem>
-              <SelectItem value="USD">USD — Dólar</SelectItem>
-              <SelectItem value="DOP">DOP — Peso dominicano</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Tabs por moneda */}
-        <Tabs defaultValue="CLP">
+        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as Moneda)}>
           <TabsList className="w-full">
-            <TabsTrigger value="CLP" className="flex-1">CLP — Chile</TabsTrigger>
-            <TabsTrigger value="USD" className="flex-1">USD — Dólar</TabsTrigger>
-            <TabsTrigger value="DOP" className="flex-1">DOP — Dom.</TabsTrigger>
+            {MONEDAS.map((m) => (
+              <TabsTrigger key={m.value} value={m.value} className="flex-1 gap-1.5">
+                {m.value}
+                {monedaDefault === m.value && (
+                  <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                )}
+              </TabsTrigger>
+            ))}
           </TabsList>
 
           {/* ── CLP ── */}
           <TabsContent value="CLP" className="space-y-3 pt-3">
+            <PredeterminadaBadge moneda="CLP" actual={monedaDefault} onMarcar={marcarPredeterminada} />
             <FormCuentaBancaria
               moneda="CLP"
               form={cuentas.CLP}
@@ -147,6 +144,7 @@ export function CuentaPanel() {
 
           {/* ── USD ── */}
           <TabsContent value="USD" className="space-y-3 pt-3">
+            <PredeterminadaBadge moneda="USD" actual={monedaDefault} onMarcar={marcarPredeterminada} />
             <div className="space-y-1.5">
               <Label>Método de pago</Label>
               <Select value={cuentas.USD.metodoUSD} onValueChange={(v) => set("USD", "metodoUSD", v)}>
@@ -158,14 +156,10 @@ export function CuentaPanel() {
                 </SelectContent>
               </Select>
             </div>
-
             {cuentas.USD.metodoUSD === "banco" && (
               <FormCuentaBancaria
-                moneda="USD"
-                form={cuentas.USD}
-                set={(k, v) => set("USD", k, v)}
-                documentoLabel="Documento"
-                documentoPlaceholder="ID / Pasaporte"
+                moneda="USD" form={cuentas.USD} set={(k, v) => set("USD", k, v)}
+                documentoLabel="Documento" documentoPlaceholder="ID / Pasaporte"
                 tiposCuenta={["Checking", "Savings"]}
               />
             )}
@@ -193,8 +187,7 @@ export function CuentaPanel() {
                 </div>
               </div>
             )}
-
-            <CamposComunes moneda="USD" form={cuentas.USD} set={(k, v) => set("USD", k, v)} />
+            <CamposComunes form={cuentas.USD} set={(k, v) => set("USD", k, v)} />
             <Button className="w-full gap-2" onClick={() => guardar("USD")} disabled={loading === "USD"}>
               <Save className="h-4 w-4" />
               {loading === "USD" ? "Guardando..." : "Guardar cuenta USD"}
@@ -203,6 +196,7 @@ export function CuentaPanel() {
 
           {/* ── DOP ── */}
           <TabsContent value="DOP" className="space-y-3 pt-3">
+            <PredeterminadaBadge moneda="DOP" actual={monedaDefault} onMarcar={marcarPredeterminada} />
             <FormCuentaBancaria
               moneda="DOP"
               form={cuentas.DOP}
@@ -222,7 +216,25 @@ export function CuentaPanel() {
   );
 }
 
-// ── Subcomponente: formulario bancario genérico ──
+function PredeterminadaBadge({ moneda, actual, onMarcar }: { moneda: Moneda; actual: Moneda; onMarcar: (m: Moneda) => void }) {
+  const esPredeterminada = moneda === actual;
+  return (
+    <button
+      type="button"
+      onClick={() => !esPredeterminada && onMarcar(moneda)}
+      className={cn(
+        "flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium transition-colors w-full",
+        esPredeterminada
+          ? "bg-yellow-50 dark:bg-yellow-950/30 text-yellow-700 dark:text-yellow-400 cursor-default"
+          : "bg-muted text-muted-foreground hover:bg-muted/80"
+      )}
+    >
+      <Star className={cn("h-3.5 w-3.5", esPredeterminada ? "fill-yellow-400 text-yellow-400" : "")} />
+      {esPredeterminada ? "Moneda predeterminada para unidades nuevas" : `Establecer ${moneda} como predeterminada`}
+    </button>
+  );
+}
+
 function FormCuentaBancaria({ form, set, documentoLabel, documentoPlaceholder, tiposCuenta }: {
   moneda: Moneda;
   form: CuentaForm;
@@ -262,12 +274,12 @@ function FormCuentaBancaria({ form, set, documentoLabel, documentoPlaceholder, t
           <Input placeholder={documentoPlaceholder} value={form.documento} onChange={(e) => set("documento", e.target.value)} />
         </div>
       </div>
-      <CamposComunes moneda={"CLP"} form={form} set={set} />
+      <CamposComunes form={form} set={set} />
     </div>
   );
 }
 
-function CamposComunes({ form, set }: { moneda: Moneda; form: CuentaForm; set: (k: keyof CuentaForm, v: string) => void }) {
+function CamposComunes({ form, set }: { form: CuentaForm; set: (k: keyof CuentaForm, v: string) => void }) {
   return (
     <div className="space-y-3">
       <div className="space-y-1.5">
