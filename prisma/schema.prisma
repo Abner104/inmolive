@@ -1,0 +1,171 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// MODELS
+
+model User {
+  id         String     @id @default(cuid())
+  email      String     @unique
+  name       String?
+  properties Property[]
+  cuentas    CuentaPago[]
+  monedaDefault Currency @default(CLP)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+}
+
+// Una cuenta por moneda por usuario
+model CuentaPago {
+  id            String   @id @default(cuid())
+  moneda        Currency
+  // Campos comunes
+  titular       String
+  email         String?
+  instrucciones String?
+  // CLP / DOP — transferencia bancaria
+  banco         String?
+  tipoCuenta    String?
+  numeroCuenta  String?
+  documento     String?  // RUT (CL) o Cédula (DO)
+  // USD — puede ser cuenta bancaria o Zelle/PayPal
+  metodoUSD     String?  // "banco" | "zelle" | "paypal"
+  zellePhone    String?
+  paypalEmail   String?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, moneda])
+}
+
+model Property {
+  id        String       @id @default(cuid())
+  name      String
+  address   String
+  type      PropertyType
+
+  userId    String
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  units     Unit[]
+  charges   Charge[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Unit {
+  id             String     @id @default(cuid())
+  name           String
+  floor          String?
+  rentPrice      Int
+  currency       Currency   @default(CLP)
+  status         UnitStatus @default(AVAILABLE)
+  dueDayOfMonth  Int        @default(1)
+
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  tenants Tenant[]
+  charges Charge[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Tenant {
+  id               String   @id @default(cuid())
+  fullName         String
+  phone            String
+  email            String?
+  documentId       String?
+  contractStartDate DateTime
+  active           Boolean  @default(true)
+
+  unitId String
+  unit   Unit   @relation(fields: [unitId], references: [id], onDelete: Cascade)
+
+  charges Charge[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Charge {
+  id        String       @id @default(cuid())
+  period    String       // 2026-04
+  amount    Int
+  dueDate   DateTime
+  status    ChargeStatus @default(PENDING)
+
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  unitId String
+  unit   Unit   @relation(fields: [unitId], references: [id], onDelete: Cascade)
+
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  paymentProof PaymentProof?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PaymentProof {
+  id       String      @id @default(cuid())
+  fileUrl  String
+  fileName String
+  status   ProofStatus @default(PENDING)
+  comment  String?
+
+  chargeId String @unique
+  charge   Charge @relation(fields: [chargeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ENUMS
+
+enum PropertyType {
+  HOUSE
+  BUILDING
+  CONDO
+}
+
+enum UnitStatus {
+  AVAILABLE
+  OCCUPIED
+  MAINTENANCE
+}
+
+enum Currency {
+  CLP
+  USD
+  DOP
+}
+
+enum ChargeStatus {
+  PENDING
+  PAID
+  LATE
+  REVIEW
+}
+
+enum ProofStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}

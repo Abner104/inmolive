@@ -36,6 +36,11 @@ yarn-error.log*
 # vercel
 .vercel
 
+# WhatsApp session
+baileys_auth/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+/lib/generated/prisma
