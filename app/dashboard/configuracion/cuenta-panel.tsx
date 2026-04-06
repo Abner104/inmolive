@@ -114,9 +114,9 @@ export function CuentaPanel() {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="CLP">🇨🇱 CLP — Peso chileno</SelectItem>
-              <SelectItem value="USD">🇺🇸 USD — Dólar</SelectItem>
-              <SelectItem value="DOP">🇩🇴 DOP — Peso dominicano</SelectItem>
+              <SelectItem value="CLP">CLP — Peso chileno</SelectItem>
+              <SelectItem value="USD">USD — Dólar</SelectItem>
+              <SelectItem value="DOP">DOP — Peso dominicano</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -124,9 +124,9 @@ export function CuentaPanel() {
         {/* Tabs por moneda */}
         <Tabs defaultValue="CLP">
           <TabsList className="w-full">
-            <TabsTrigger value="CLP" className="flex-1">🇨🇱 CLP</TabsTrigger>
-            <TabsTrigger value="USD" className="flex-1">🇺🇸 USD</TabsTrigger>
-            <TabsTrigger value="DOP" className="flex-1">🇩🇴 DOP</TabsTrigger>
+            <TabsTrigger value="CLP" className="flex-1">CLP — Chile</TabsTrigger>
+            <TabsTrigger value="USD" className="flex-1">USD — Dólar</TabsTrigger>
+            <TabsTrigger value="DOP" className="flex-1">DOP — Dom.</TabsTrigger>
           </TabsList>
 
           {/* ── CLP ── */}
