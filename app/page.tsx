@@ -49,8 +49,8 @@ export default function HomePage() {
           width={180}
           height={120}
           unoptimized
-          className="object-contain object-contain"
-          style={{ height: 38, width: "auto" }}
+          className="object-contain"
+          style={{ height: 52, width: "auto" }}
         />
         <div className="flex items-center gap-3">
           <Button asChild variant="ghost" size="sm" className="rounded-xl text-slate-300 hover:text-white hover:bg-white/10">
