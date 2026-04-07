@@ -12,6 +12,8 @@ import {
   ArrowLeft, Phone, Mail, FileText, Calendar,
   CheckCircle2, Clock, AlertTriangle, Search
 } from "lucide-react";
+import { WhatsAppButton } from "@/components/acciones/whatsapp-button";
+import { InquilinoAcciones } from "@/components/acciones/inquilino-acciones";
 
 const ESTADO_LABEL: Record<string, string> = {
   PENDING: "Pendiente", PAID: "Pagado", LATE: "Atrasado", REVIEW: "En revisión",
@@ -90,10 +92,18 @@ export default async function InquilinoDetallePage({ params }: { params: { id: s
                 {inquilino.unit.property.name} — {inquilino.unit.name}
               </p>
             </div>
-            <div className="ml-auto">
+            <div className="ml-auto flex items-center gap-2">
               <Badge variant={inquilino.active ? "default" : "secondary"} className="text-xs">
                 {inquilino.active ? "Activo" : "Inactivo"}
               </Badge>
+              <WhatsAppButton
+                phone={inquilino.phone}
+                mensaje={`Hola ${inquilino.fullName.split(" ")[0]}, te contactamos desde Inmolive.`}
+                variant="outline"
+                size="sm"
+                label="WhatsApp"
+              />
+              <InquilinoAcciones inquilino={inquilino} />
             </div>
           </div>
 

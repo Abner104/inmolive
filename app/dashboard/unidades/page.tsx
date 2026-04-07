@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Wallet } from "lucide-react";
 import { UnidadDialog } from "./unidad-dialog";
+import { UnidadAcciones } from "@/components/acciones/unidad-acciones";
 
 const estadoConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
   OCCUPIED: { label: "Ocupada", variant: "default" },
@@ -47,6 +48,7 @@ export default async function UnidadesPage() {
               {unidades.map((u) => {
                 const est = estadoConfig[u.status] ?? { label: u.status, variant: "secondary" as const };
                 const inquilino = u.tenants[0];
+                const esDiario = u.rentalType === "DAILY";
                 return (
                   <Card key={u.id} className="rounded-3xl shadow-sm">
                     <CardHeader className="flex flex-row items-start justify-between">
@@ -56,14 +58,29 @@ export default async function UnidadesPage() {
                           {u.property.name}{u.floor ? ` · Piso ${u.floor}` : ""}
                         </p>
                       </div>
-                      <Badge variant={est.variant}>{est.label}</Badge>
+                      <div className="flex items-center gap-1">
+                        <Badge variant={est.variant}>{est.label}</Badge>
+                        <UnidadAcciones unidad={{
+                          id: u.id, name: u.name, floor: u.floor,
+                          rentPrice: u.rentPrice, currency: u.currency,
+                          dueDayOfMonth: u.dueDayOfMonth, status: u.status,
+                          rentalType: u.rentalType,
+                        }} />
+                      </div>
                     </CardHeader>
                     <CardContent className="space-y-1.5 text-sm text-muted-foreground">
                       <p className="font-semibold text-foreground">
                         {u.currency} {u.rentPrice.toLocaleString()}
-                        <span className="ml-1 text-xs font-normal text-muted-foreground">/ mes</span>
+                        <span className="ml-1 text-xs font-normal text-muted-foreground">
+                          {esDiario ? "/ día" : "/ mes"}
+                        </span>
                       </p>
-                      <p>Vence día <span className="font-medium text-foreground">{u.dueDayOfMonth}</span></p>
+                      {!esDiario && (
+                        <p>Vence día <span className="font-medium text-foreground">{u.dueDayOfMonth}</span></p>
+                      )}
+                      {esDiario && (
+                        <Badge variant="outline" className="text-xs">Alquiler por día/noche</Badge>
+                      )}
                       {inquilino && (
                         <p className="truncate">
                           Inquilino: <span className="font-medium text-foreground">{inquilino.fullName}</span>

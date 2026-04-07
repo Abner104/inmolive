@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Building2, Home, Landmark } from "lucide-react";
 import { PropiedadDialog } from "./propiedad-dialog";
 import { getUser } from "@/lib/auth/get-user";
+import { PropiedadAcciones } from "@/components/acciones/propiedad-acciones";
 
 const tipoLabel: Record<string, string> = { HOUSE: "Casa", BUILDING: "Edificio", CONDO: "Condominio" };
 const tipoIcon: Record<string, React.ReactNode> = {
@@ -38,7 +39,7 @@ export default async function PropiedadesPage() {
               {propiedades.map((p) => (
                 <Card key={p.id} className="rounded-3xl shadow-sm">
                   <CardHeader className="flex flex-row items-center gap-3">
-                    <div className="rounded-xl bg-slate-100 p-2 text-muted-foreground">
+                    <div className="rounded-xl bg-slate-100 dark:bg-slate-800 p-2 text-muted-foreground">
                       {tipoIcon[p.type] ?? <Building2 className="h-5 w-5" />}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -46,6 +47,7 @@ export default async function PropiedadesPage() {
                       <p className="truncate text-xs text-muted-foreground">{p.address}</p>
                     </div>
                     <Badge variant="secondary">{tipoLabel[p.type] ?? p.type}</Badge>
+                    <PropiedadAcciones propiedad={{ id: p.id, name: p.name, address: p.address, type: p.type }} />
                   </CardHeader>
                   <CardContent>
                     <p className="text-sm text-muted-foreground">

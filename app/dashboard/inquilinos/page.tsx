@@ -5,9 +5,11 @@ import { getInquilinos } from "@/lib/db/inquilinos";
 import { getUser } from "@/lib/auth/get-user";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Users, Phone, Mail, ChevronRight } from "lucide-react";
+import { Users, Phone, Mail } from "lucide-react";
 import { formatFecha } from "@/lib/utils/fecha";
 import { InquilinoDialog } from "./inquilino-dialog";
+import { InquilinoAcciones } from "@/components/acciones/inquilino-acciones";
+import { WhatsAppButton } from "@/components/acciones/whatsapp-button";
 
 export default async function InquilinosPage() {
   const user = await getUser();
@@ -31,39 +33,44 @@ export default async function InquilinosPage() {
           ) : (
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
               {inquilinos.map((i) => (
-                <Link key={i.id} href={`/dashboard/inquilinos/${i.id}`}>
-                  <Card className="rounded-3xl shadow-sm hover:shadow-md hover:border-primary/30 transition-all cursor-pointer">
-                    <CardHeader>
-                      <div className="flex items-start justify-between">
-                        <CardTitle className="text-base">{i.fullName}</CardTitle>
-                        <div className="flex items-center gap-2">
-                          <Badge variant={i.active ? "default" : "secondary"}>
-                            {i.active ? "Activo" : "Inactivo"}
-                          </Badge>
-                          <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                        </div>
+                <Card key={i.id} className="rounded-3xl shadow-sm hover:shadow-md transition-all">
+                  <CardHeader>
+                    <div className="flex items-start justify-between">
+                      <Link href={`/dashboard/inquilinos/${i.id}`} className="flex-1 min-w-0">
+                        <CardTitle className="text-base hover:text-primary transition-colors">{i.fullName}</CardTitle>
+                      </Link>
+                      <div className="flex items-center gap-1 shrink-0">
+                        <Badge variant={i.active ? "default" : "secondary"}>
+                          {i.active ? "Activo" : "Inactivo"}
+                        </Badge>
+                        <WhatsAppButton
+                          phone={i.phone}
+                          mensaje={`Hola ${i.fullName.split(" ")[0]}, te contactamos desde Inmolive.`}
+                          size="icon"
+                        />
+                        <InquilinoAcciones inquilino={i} />
                       </div>
-                      <p className="text-xs text-muted-foreground">
-                        {i.unit.property.name} — {i.unit.name}
-                      </p>
-                    </CardHeader>
-                    <CardContent className="space-y-1.5 text-sm text-muted-foreground">
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      {i.unit.property.name} — {i.unit.name}
+                    </p>
+                  </CardHeader>
+                  <CardContent className="space-y-1.5 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-2">
+                      <Phone className="h-3.5 w-3.5 shrink-0" />
+                      {i.phone}
+                    </div>
+                    {i.email && (
                       <div className="flex items-center gap-2">
-                        <Phone className="h-3.5 w-3.5 shrink-0" />
-                        {i.phone}
+                        <Mail className="h-3.5 w-3.5 shrink-0" />
+                        {i.email}
                       </div>
-                      {i.email && (
-                        <div className="flex items-center gap-2">
-                          <Mail className="h-3.5 w-3.5 shrink-0" />
-                          {i.email}
-                        </div>
-                      )}
-                      <p className="text-xs text-muted-foreground/60">
-                        Desde {formatFecha(i.contractStartDate)}
-                      </p>
-                    </CardContent>
-                  </Card>
-                </Link>
+                    )}
+                    <p className="text-xs text-muted-foreground/60">
+                      Desde {formatFecha(i.contractStartDate)}
+                    </p>
+                  </CardContent>
+                </Card>
               ))}
             </div>
           )}

@@ -72,6 +72,7 @@ model Unit {
   currency       Currency   @default(CLP)
   status         UnitStatus @default(AVAILABLE)
   dueDayOfMonth  Int        @default(1)
+  rentalType     RentalType @default(MONTHLY)
 
   propertyId String
   property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
@@ -102,11 +103,12 @@ model Tenant {
 }
 
 model Charge {
-  id        String       @id @default(cuid())
-  period    String       // 2026-04
-  amount    Int
-  dueDate   DateTime
-  status    ChargeStatus @default(PENDING)
+  id          String       @id @default(cuid())
+  period      String       // 2026-04 o 2026-04-15/2026-04-18 para estadías
+  amount      Int
+  dueDate     DateTime
+  status      ChargeStatus @default(PENDING)
+  description String?      // para cobros manuales o estadías
 
   propertyId String
   property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
@@ -168,4 +170,9 @@ enum ProofStatus {
   PENDING
   APPROVED
   REJECTED
+}
+
+enum RentalType {
+  MONTHLY
+  DAILY
 }
