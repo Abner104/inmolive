@@ -52,8 +52,7 @@ export default function RegisterPage() {
       setLoading(false);
       return;
     }
-    toast.success("Cuenta creada. Revisá tu email para confirmar.");
-    router.push("/login");
+    router.push("/verificar-email");
   }
 
   return (
