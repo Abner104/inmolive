@@ -115,7 +115,7 @@ export default async function CobrosPage() {
                             <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                               <WhatsAppButton
                                 phone={c.tenant.phone}
-                                mensaje={`Hola ${c.tenant.fullName.split(" ")[0]} 👋\n\nTe recordamos que tu arriendo de *${c.unit.currency} ${c.amount.toLocaleString()}* (${formatPeriod(c.period)}) vence el *${formatFecha(c.dueDate)}*.\n\nPagá aquí 👇\n${linkPago}`}
+                                mensaje={`Hola ${c.tenant.fullName.split(" ")[0]} 👋\n\nTe recordamos que tu arriendo de *${c.unit.currency} ${c.amount.toLocaleString()}* (${formatPeriod(c.period)}) vence el *${formatFecha(c.dueDate)}*.\n\nPagá aquí 👇 ${linkPago}`}
                                 size="icon"
                               />
                               <CopyLinkButton cobroId={c.id} />
@@ -155,7 +155,7 @@ export default async function CobrosPage() {
                         <div className="flex items-center gap-1">
                           <WhatsAppButton
                             phone={c.tenant.phone}
-                            mensaje={`Hola ${c.tenant.fullName.split(" ")[0]} 👋\n\nTe recordamos que tu arriendo de *${c.unit.currency} ${c.amount.toLocaleString()}* (${formatPeriod(c.period)}) vence el *${formatFecha(c.dueDate)}*.\n\nPagá aquí 👇\n${linkPago}`}
+                            mensaje={`Hola ${c.tenant.fullName.split(" ")[0]} 👋\n\nTe recordamos que tu arriendo de *${c.unit.currency} ${c.amount.toLocaleString()}* (${formatPeriod(c.period)}) vence el *${formatFecha(c.dueDate)}*.\n\nPagá aquí 👇 ${linkPago}`}
                             size="icon"
                           />
                           <CopyLinkButton cobroId={c.id} />
