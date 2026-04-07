@@ -40,8 +40,12 @@ export function ReporteTicket({ tenantId }: { tenantId: string }) {
         }),
       });
       if (!res.ok) throw new Error();
+      const data = await res.json();
       setSent(true);
       toast.success("Reporte enviado al administrador");
+      if (data.waUrl) {
+        window.open(data.waUrl, "_blank");
+      }
     } catch {
       toast.error("Error al enviar el reporte");
     } finally {

@@ -80,7 +80,12 @@ export function PagarForm({ cobroId, monedaBase, montoBase, cuentas }: Props) {
         body: JSON.stringify({ cobroId, fileUrl, fileName: `[${metodo.toUpperCase()}] ${fileName}` }),
       });
       if (!res.ok) throw new Error();
+      const data = await res.json();
       setDone(true);
+      // Abrir WA al admin si tiene teléfono configurado
+      if (data.waUrl) {
+        window.open(data.waUrl, "_blank");
+      }
     } catch {
       toast.error("Error al enviar. Intentá de nuevo.");
     } finally {
