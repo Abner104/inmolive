@@ -39,7 +39,7 @@ const paises = [
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white overflow-hidden">
+    <main className="min-h-screen w-full overflow-x-hidden bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white">
 
       {/* Navbar */}
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">

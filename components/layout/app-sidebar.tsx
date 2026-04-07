@@ -19,7 +19,7 @@ const bottomItems = [
   { href: "/dashboard/configuracion", label: "Configuración", icon: Settings },
 ];
 
-export function AppSidebar() {
+export function AppSidebar({ inSheet = false }: { inSheet?: boolean }) {
   const pathname = usePathname();
 
   function isActive(href: string, exact?: boolean) {
@@ -27,9 +27,20 @@ export function AppSidebar() {
   }
 
   return (
-    <aside className="hidden w-64 shrink-0 flex-col border-r bg-background lg:flex">
+    <aside className={cn(
+      "w-64 shrink-0 flex-col border-r bg-background",
+      inSheet ? "flex h-full" : "hidden lg:flex"
+    )}>
       <div className="flex h-16 items-center border-b px-5">
-        <Image src="/logoinmio.png" alt="Inmolive" width={120} height={80} unoptimized className="object-contain brightness-0 dark:brightness-100" style={{ height: 40, width: "auto" }} />
+        <Image
+          src="/logoinmio.png"
+          alt="Inmolive"
+          width={120}
+          height={80}
+          unoptimized
+          className="object-contain brightness-0 dark:brightness-100"
+          style={{ height: 40, width: "auto" }}
+        />
       </div>
 
       <nav className="flex-1 space-y-0.5 p-3">

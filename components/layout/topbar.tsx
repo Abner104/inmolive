@@ -28,8 +28,8 @@ export function Topbar() {
               <Menu className="h-5 w-5" />
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="p-0">
-            <AppSidebar />
+          <SheetContent side="left" className="p-0 w-64">
+            <AppSidebar inSheet />
           </SheetContent>
         </Sheet>
         <div>
