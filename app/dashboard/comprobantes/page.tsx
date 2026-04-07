@@ -32,51 +32,76 @@ export default async function ComprobantesPage() {
               <p className="text-sm">No hay comprobantes enviados</p>
             </div>
           ) : (
-            <div className="overflow-hidden rounded-3xl border bg-card shadow-sm">
-              <table className="w-full text-sm">
-                <thead className="border-b bg-muted text-xs font-medium text-muted-foreground">
-                  <tr>
-                    <th className="px-4 py-3 text-left">Inquilino</th>
-                    <th className="px-4 py-3 text-left">Unidad</th>
-                    <th className="px-4 py-3 text-left">Periodo</th>
-                    <th className="px-4 py-3 text-left">Archivo</th>
-                    <th className="px-4 py-3 text-left">Estado</th>
-                    <th className="px-4 py-3 text-left">Acciones</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {comprobantes.map((c) => {
-                    const est = estadoConfig[c.status] ?? { label: c.status, variant: "secondary" as const };
-                    return (
-                      <tr key={c.id} className="hover:bg-muted/50">
-                        <td className="px-4 py-3 font-medium">{c.charge.tenant.fullName}</td>
-                        <td className="px-4 py-3 text-muted-foreground">{c.charge.unit.name}</td>
-                        <td className="px-4 py-3 text-muted-foreground">{c.charge.period}</td>
-                        <td className="px-4 py-3">
-                          <a
-                            href={c.fileUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center gap-1 text-blue-500 hover:underline"
-                          >
-                            <ExternalLink className="h-3.5 w-3.5" />
-                            {c.fileName}
-                          </a>
-                        </td>
-                        <td className="px-4 py-3">
-                          <Badge variant={est.variant}>{est.label}</Badge>
-                        </td>
-                        <td className="px-4 py-3">
-                          {c.status === "PENDING" && (
-                            <RevisarButtons comprobanteId={c.id} />
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+            <>
+              {/* Tabla — solo desktop */}
+              <div className="hidden md:block overflow-hidden rounded-3xl border bg-card shadow-sm">
+                <table className="w-full text-sm">
+                  <thead className="border-b bg-muted text-xs font-medium text-muted-foreground">
+                    <tr>
+                      <th className="px-4 py-3 text-left">Inquilino</th>
+                      <th className="px-4 py-3 text-left">Unidad</th>
+                      <th className="px-4 py-3 text-left">Periodo</th>
+                      <th className="px-4 py-3 text-left">Archivo</th>
+                      <th className="px-4 py-3 text-left">Estado</th>
+                      <th className="px-4 py-3 text-left">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y">
+                    {comprobantes.map((c) => {
+                      const est = estadoConfig[c.status] ?? { label: c.status, variant: "secondary" as const };
+                      return (
+                        <tr key={c.id} className="hover:bg-muted/50">
+                          <td className="px-4 py-3 font-medium">{c.charge.tenant.fullName}</td>
+                          <td className="px-4 py-3 text-muted-foreground">{c.charge.unit.name}</td>
+                          <td className="px-4 py-3 text-muted-foreground">{c.charge.period}</td>
+                          <td className="px-4 py-3">
+                            <a href={c.fileUrl} target="_blank" rel="noopener noreferrer"
+                              className="flex items-center gap-1 text-blue-500 hover:underline">
+                              <ExternalLink className="h-3.5 w-3.5" />
+                              {c.fileName}
+                            </a>
+                          </td>
+                          <td className="px-4 py-3">
+                            <Badge variant={est.variant}>{est.label}</Badge>
+                          </td>
+                          <td className="px-4 py-3">
+                            {c.status === "PENDING" && <RevisarButtons comprobanteId={c.id} />}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Cards — solo móvil */}
+              <div className="md:hidden space-y-3">
+                {comprobantes.map((c) => {
+                  const est = estadoConfig[c.status] ?? { label: c.status, variant: "secondary" as const };
+                  return (
+                    <div key={c.id} className="rounded-2xl border bg-card p-4 space-y-3">
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <p className="font-semibold">{c.charge.tenant.fullName}</p>
+                          <p className="text-xs text-muted-foreground">{c.charge.unit.name} · {c.charge.period}</p>
+                        </div>
+                        <Badge variant={est.variant} className="shrink-0">{est.label}</Badge>
+                      </div>
+                      <a href={c.fileUrl} target="_blank" rel="noopener noreferrer"
+                        className="flex items-center gap-1.5 text-sm text-blue-500 hover:underline truncate">
+                        <ExternalLink className="h-3.5 w-3.5 shrink-0" />
+                        <span className="truncate">{c.fileName}</span>
+                      </a>
+                      {c.status === "PENDING" && (
+                        <div className="pt-1">
+                          <RevisarButtons comprobanteId={c.id} />
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </>
           )}
         </main>
       </div>
