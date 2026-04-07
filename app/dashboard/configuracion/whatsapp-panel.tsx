@@ -4,12 +4,13 @@ import { useEffect, useState, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MessageCircle, RefreshCw, Wifi, WifiOff } from "lucide-react";
+import { MessageCircle, RefreshCw, Wifi, WifiOff, AlertTriangle } from "lucide-react";
 import Image from "next/image";
 
 interface Estado {
   connected: boolean;
   qr: string | null;
+  serverless?: boolean;
 }
 
 export function WhatsAppPanel() {
@@ -25,7 +26,6 @@ export function WhatsAppPanel() {
       setEstado(data);
 
       if (data.qr) {
-        // Convertir el string QR a imagen usando qrcode
         const QRCode = (await import("qrcode")).default;
         const url = await QRCode.toDataURL(data.qr, { width: 256, margin: 2 });
         setQrDataUrl(url);
@@ -33,7 +33,7 @@ export function WhatsAppPanel() {
         setQrDataUrl(null);
       }
     } catch {
-      // silenciar error si WhatsApp no está disponible
+      // silenciar error
     } finally {
       setLoading(false);
     }
@@ -41,7 +41,6 @@ export function WhatsAppPanel() {
 
   useEffect(() => {
     fetchEstado();
-    // Polling cada 5 segundos para detectar cuando se conecta
     const interval = setInterval(fetchEstado, 5000);
     return () => clearInterval(interval);
   }, [fetchEstado]);
@@ -67,7 +66,17 @@ export function WhatsAppPanel() {
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        {estado.connected ? (
+        {estado.serverless ? (
+          <div className="rounded-2xl border border-yellow-200 bg-yellow-50 dark:bg-yellow-950/30 dark:border-yellow-800 p-4 space-y-2">
+            <div className="flex items-center gap-2 text-yellow-700 dark:text-yellow-400">
+              <AlertTriangle className="h-4 w-4 shrink-0" />
+              <p className="text-sm font-medium">No disponible en Vercel</p>
+            </div>
+            <p className="text-xs text-yellow-600 dark:text-yellow-500">
+              WhatsApp requiere un proceso Node.js persistente. Vercel usa funciones serverless que se apagan entre requests. Para usar esta función necesitás un servidor dedicado (VPS, Railway, Render, etc.).
+            </p>
+          </div>
+        ) : estado.connected ? (
           <div className="rounded-2xl bg-green-50 dark:bg-green-950/30 p-4 text-center">
             <p className="text-sm font-medium text-green-700 dark:text-green-400">
               WhatsApp conectado y listo para enviar recordatorios
@@ -93,15 +102,17 @@ export function WhatsAppPanel() {
           </div>
         )}
 
-        <Button
-          variant="outline"
-          className="w-full gap-2"
-          onClick={fetchEstado}
-          disabled={loading}
-        >
-          <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
-          {loading ? "Actualizando..." : "Actualizar estado"}
-        </Button>
+        {!estado.serverless && (
+          <Button
+            variant="outline"
+            className="w-full gap-2"
+            onClick={fetchEstado}
+            disabled={loading}
+          >
+            <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+            {loading ? "Actualizando..." : "Actualizar estado"}
+          </Button>
+        )}
       </CardContent>
     </Card>
   );
