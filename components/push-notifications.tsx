@@ -12,7 +12,26 @@ export function PushNotifications() {
       setState("unsupported");
       return;
     }
-    setState(Notification.permission === "granted" ? "granted" : Notification.permission === "denied" ? "denied" : "default");
+    if (Notification.permission === "denied") { setState("denied"); return; }
+    if (Notification.permission === "default") { setState("default"); return; }
+
+    // Permiso granted — verificar si hay suscripción activa en el SW
+    navigator.serviceWorker.register("/sw.js").then(async (reg) => {
+      const sub = await reg.pushManager.getSubscription();
+      if (sub) {
+        // Hay suscripción activa, sincronizarla con la BD por si acaso
+        const { endpoint, keys } = sub.toJSON() as { endpoint: string; keys: { p256dh: string; auth: string } };
+        await fetch("/api/push/subscribe", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ endpoint, keys }),
+        });
+        setState("granted");
+      } else {
+        // Permiso dado pero sin suscripción — hay que re-suscribirse
+        setState("default");
+      }
+    }).catch(() => setState("default"));
   }, []);
 
   async function subscribe() {
