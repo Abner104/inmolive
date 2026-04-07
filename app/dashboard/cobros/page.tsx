@@ -27,7 +27,7 @@ function formatPeriod(period: string) {
 export default async function CobrosPage() {
   const user = await getUser();
   const cobros = await getCobros({ userId: user.id });
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://inmio.vercel.app";
+  const appUrl = "https://inmio.vercel.app";
 
   const resumen = {
     total: cobros.length,
@@ -96,7 +96,7 @@ export default async function CobrosPage() {
                   <tbody className="divide-y">
                     {cobros.map((c: (typeof cobros)[number]) => {
                       const est = estadoConfig[c.status] ?? estadoConfig.PENDING;
-                      const linkPago = `${appUrl}/pagar/${c.id}`;
+                      const linkPago = `${appUrl}/p/${c.id}`;
                       return (
                         <tr key={c.id} className="group hover:bg-muted/30 transition-colors">
                           <td className="px-5 py-3.5 font-medium">{c.tenant.fullName}</td>
@@ -135,7 +135,7 @@ export default async function CobrosPage() {
               <div className="md:hidden space-y-3">
                 {cobros.map((c: (typeof cobros)[number]) => {
                   const est = estadoConfig[c.status] ?? estadoConfig.PENDING;
-                  const linkPago = `${appUrl}/pagar/${c.id}`;
+                  const linkPago = `${appUrl}/p/${c.id}`;
                   return (
                     <div key={c.id} className="rounded-2xl border bg-card p-4 space-y-3">
                       <div className="flex items-start justify-between gap-2">
