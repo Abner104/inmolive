@@ -15,6 +15,7 @@
     "@supabase/supabase-js": "^2.101.1",
     "@types/nprogress": "^0.2.3",
     "@types/qrcode": "^1.5.6",
+    "@types/web-push": "^3.6.4",
     "baileys": "^7.0.0-rc.9",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -37,6 +38,7 @@
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.5.0",
     "tw-animate-css": "^1.4.0",
+    "web-push": "^3.6.7",
     "zod": "^4.3.6"
   },
   "devDependencies": {

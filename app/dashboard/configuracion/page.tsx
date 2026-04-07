@@ -4,6 +4,7 @@ import { getUser } from "@/lib/auth/get-user";
 import { WhatsAppPanel } from "./whatsapp-panel";
 import { NotificacionesPanel } from "./notificaciones-panel";
 import { CuentaPanel } from "./cuenta-panel";
+import { PerfilPanel } from "./perfil-panel";
 import { Settings } from "lucide-react";
 
 export default async function ConfiguracionPage() {
@@ -22,7 +23,10 @@ export default async function ConfiguracionPage() {
             </h2>
             <p className="text-sm text-muted-foreground mt-1">Administrá las integraciones del sistema</p>
           </div>
-          <CuentaPanel />
+          <div className="grid gap-6 lg:grid-cols-2">
+            <PerfilPanel />
+            <CuentaPanel />
+          </div>
           <div className="grid gap-6 lg:grid-cols-2">
             <WhatsAppPanel />
             <NotificacionesPanel />

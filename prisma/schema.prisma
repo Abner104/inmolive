@@ -14,11 +14,23 @@ model User {
   id         String     @id @default(cuid())
   email      String     @unique
   name       String?
+  phone      String?
   properties Property[]
   cuentas    CuentaPago[]
+  pushSubs   PushSubscription[]
   monedaDefault Currency @default(CLP)
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
+}
+
+model PushSubscription {
+  id       String @id @default(cuid())
+  endpoint String @unique
+  p256dh   String
+  auth     String
+  userId   String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
 }
 
 // Una cuenta por moneda por usuario

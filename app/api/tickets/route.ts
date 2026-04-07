@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db/prisma";
 import { createClient } from "@/lib/supabase/server";
+import { sendPushToUser } from "@/lib/push/send";
 
 async function getUserId() {
   const supabase = await createClient();
@@ -44,6 +45,19 @@ export async function POST(req: NextRequest) {
       unitId: tenant.unitId,
     },
   });
+
+  // Notificar al admin
+  const unit = await prisma.unit.findUnique({
+    where: { id: tenant.unitId },
+    include: { property: true },
+  });
+  if (unit) {
+    sendPushToUser(unit.property.userId, {
+      title: "Nuevo ticket de mantenimiento",
+      body: `${tenant.fullName}: ${titulo}`,
+      url: "/dashboard/tickets",
+    }).catch(() => {});
+  }
 
   return NextResponse.json(ticket, { status: 201 });
 }

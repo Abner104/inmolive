@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Bell, Play } from "lucide-react";
+import { Bell, Play, BellRing } from "lucide-react";
 import { toast } from "sonner";
 
 interface Resultado {
@@ -16,6 +16,7 @@ interface Resultado {
 
 export function NotificacionesPanel() {
   const [loading, setLoading] = useState(false);
+  const [loadingPush, setLoadingPush] = useState(false);
   const [ultimo, setUltimo] = useState<Resultado | null>(null);
 
   async function handleEjecutar() {
@@ -33,6 +34,23 @@ export function NotificacionesPanel() {
       toast.error("Error al ejecutar notificaciones");
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleTestPush() {
+    setLoadingPush(true);
+    try {
+      const res = await fetch("/api/push/test", { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.error ?? "Error al enviar notificación de prueba");
+      } else {
+        toast.success("Notificación de prueba enviada");
+      }
+    } catch {
+      toast.error("Error al enviar notificación de prueba");
+    } finally {
+      setLoadingPush(false);
     }
   }
 
@@ -88,6 +106,17 @@ export function NotificacionesPanel() {
         <p className="text-center text-xs text-muted-foreground">
           En producción esto corre automáticamente cada día a las 9:00 AM
         </p>
+
+        <div className="border-t pt-4 space-y-2">
+          <p className="text-xs font-medium text-muted-foreground">Notificaciones push</p>
+          <Button variant="outline" className="w-full gap-2" onClick={handleTestPush} disabled={loadingPush}>
+            <BellRing className="h-4 w-4" />
+            {loadingPush ? "Enviando..." : "Probar notificación push"}
+          </Button>
+          <p className="text-xs text-muted-foreground text-center">
+            Asegurate de activar el ícono de campana en la barra superior primero
+          </p>
+        </div>
       </CardContent>
     </Card>
   );

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { AppSidebar } from "./app-sidebar";
+import { PushNotifications } from "@/components/push-notifications";
 import { createClient } from "@/lib/supabase/client";
 
 export function Topbar() {
@@ -38,6 +39,7 @@ export function Topbar() {
         </div>
       </div>
       <div className="flex items-center gap-2">
+        <PushNotifications />
         <Button
           variant="outline"
           size="icon"
