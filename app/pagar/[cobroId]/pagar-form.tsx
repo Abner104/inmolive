@@ -137,7 +137,12 @@ export function PagarForm({ cobroId, monedaBase, montoBase, cuentas }: Props) {
         </div>
         <div className="space-y-1.5">
           <Label>Monto</Label>
-          <Input name="monto" type="number" defaultValue={montoBase} />
+          <Input
+            name="monto"
+            readOnly
+            value={`${monedaBase} ${montoBase.toLocaleString()}`}
+            className="bg-muted/50 text-foreground font-semibold"
+          />
         </div>
       </div>
 
