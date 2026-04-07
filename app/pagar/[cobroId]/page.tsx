@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db/prisma";
 import { notFound } from "next/navigation";
 import { PagarForm } from "./pagar-form";
+import { ReporteTicket } from "./reporte-ticket";
 import { CheckCircle } from "lucide-react";
 import { formatFecha } from "@/lib/utils/fecha";
 import Image from "next/image";
@@ -86,6 +87,9 @@ export default async function PagarPage({ params }: Props) {
           montoBase={cobro.amount}
           cuentas={cuentas}
         />
+
+        {/* Reporte de mantenimiento */}
+        <ReporteTicket tenantId={cobro.tenant.id} />
       </div>
     </div>
   );

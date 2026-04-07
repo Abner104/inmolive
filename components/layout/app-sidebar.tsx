@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Building2, CreditCard, FileImage, Home, Users, Wallet, Settings } from "lucide-react";
+import { Building2, CreditCard, FileImage, Home, Users, Wallet, Settings, Wrench } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 
@@ -13,6 +13,7 @@ const items = [
   { href: "/dashboard/inquilinos", label: "Inquilinos", icon: Users },
   { href: "/dashboard/cobros", label: "Cobros", icon: CreditCard },
   { href: "/dashboard/comprobantes", label: "Comprobantes", icon: FileImage },
+  { href: "/dashboard/tickets", label: "Mantenimiento", icon: Wrench },
 ];
 
 const bottomItems = [
