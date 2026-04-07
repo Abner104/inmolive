@@ -39,7 +39,7 @@ export default async function PagarPage({ params }: Props) {
     );
   }
 
-  if (cobro.paymentProof) {
+  if (cobro.paymentProof && cobro.paymentProof.status !== "REJECTED") {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background p-4">
         <div className="flex flex-col items-center gap-4 text-center">

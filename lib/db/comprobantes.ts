@@ -29,6 +29,11 @@ export async function crearComprobante(data: {
   fileUrl: string;
   fileName: string;
 }) {
+  // Si había un comprobante rechazado, lo eliminamos antes de crear uno nuevo
+  await prisma.paymentProof.deleteMany({
+    where: { chargeId: data.cobroId, status: "REJECTED" },
+  });
+
   const [comprobante] = await prisma.$transaction([
     prisma.paymentProof.create({
       data: {
