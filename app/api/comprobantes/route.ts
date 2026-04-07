@@ -19,11 +19,14 @@ export async function POST(req: NextRequest) {
   });
 
   if (cobro) {
+    console.log("[comprobante] llamando sendPushToUser para userId:", cobro.property.userId);
     sendPushToUser(cobro.property.userId, {
       title: "Comprobante recibido",
       body: `${cobro.tenant.fullName} subió un comprobante de pago.`,
       url: "/dashboard/cobros",
-    }).catch(() => {});
+    }).catch((err) => console.error("[comprobante] error en sendPushToUser:", err));
+  } else {
+    console.log("[comprobante] cobro no encontrado para cobroId:", cobroId);
   }
 
   return NextResponse.json(comprobante, { status: 201 });
