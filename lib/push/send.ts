@@ -9,7 +9,9 @@ export async function sendPushToUser(userId: string, payload: { title: string; b
     process.env.VAPID_PRIVATE_KEY!,
   );
   const subs = await prisma.pushSubscription.findMany({ where: { userId } });
-  console.log("[push] subs encontradas:", subs.length);
+  console.log("[push] subs encontradas:", subs.length, "para userId:", userId);
+  const todas = await prisma.pushSubscription.findMany({ select: { userId: true } });
+  console.log("[push] todas las subs en BD:", JSON.stringify(todas));
   if (!subs.length) return;
 
   const message = JSON.stringify(payload);
