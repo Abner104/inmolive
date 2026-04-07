@@ -1,10 +1,11 @@
+import Link from "next/link";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { Topbar } from "@/components/layout/topbar";
 import { getInquilinos } from "@/lib/db/inquilinos";
 import { getUser } from "@/lib/auth/get-user";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Users, Phone, Mail } from "lucide-react";
+import { Users, Phone, Mail, ChevronRight } from "lucide-react";
 import { formatFecha } from "@/lib/utils/fecha";
 import { InquilinoDialog } from "./inquilino-dialog";
 
@@ -30,34 +31,39 @@ export default async function InquilinosPage() {
           ) : (
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
               {inquilinos.map((i) => (
-                <Card key={i.id} className="rounded-3xl shadow-sm">
-                  <CardHeader>
-                    <div className="flex items-start justify-between">
-                      <CardTitle className="text-base">{i.fullName}</CardTitle>
-                      <Badge variant={i.active ? "default" : "secondary"}>
-                        {i.active ? "Activo" : "Inactivo"}
-                      </Badge>
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      {i.unit.property.name} — {i.unit.name}
-                    </p>
-                  </CardHeader>
-                  <CardContent className="space-y-1.5 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-2">
-                      <Phone className="h-3.5 w-3.5 shrink-0" />
-                      {i.phone}
-                    </div>
-                    {i.email && (
-                      <div className="flex items-center gap-2">
-                        <Mail className="h-3.5 w-3.5 shrink-0" />
-                        {i.email}
+                <Link key={i.id} href={`/dashboard/inquilinos/${i.id}`}>
+                  <Card className="rounded-3xl shadow-sm hover:shadow-md hover:border-primary/30 transition-all cursor-pointer">
+                    <CardHeader>
+                      <div className="flex items-start justify-between">
+                        <CardTitle className="text-base">{i.fullName}</CardTitle>
+                        <div className="flex items-center gap-2">
+                          <Badge variant={i.active ? "default" : "secondary"}>
+                            {i.active ? "Activo" : "Inactivo"}
+                          </Badge>
+                          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                        </div>
                       </div>
-                    )}
-                    <p className="text-xs text-muted-foreground/60">
-                      Desde {formatFecha(i.contractStartDate)}
-                    </p>
-                  </CardContent>
-                </Card>
+                      <p className="text-xs text-muted-foreground">
+                        {i.unit.property.name} — {i.unit.name}
+                      </p>
+                    </CardHeader>
+                    <CardContent className="space-y-1.5 text-sm text-muted-foreground">
+                      <div className="flex items-center gap-2">
+                        <Phone className="h-3.5 w-3.5 shrink-0" />
+                        {i.phone}
+                      </div>
+                      {i.email && (
+                        <div className="flex items-center gap-2">
+                          <Mail className="h-3.5 w-3.5 shrink-0" />
+                          {i.email}
+                        </div>
+                      )}
+                      <p className="text-xs text-muted-foreground/60">
+                        Desde {formatFecha(i.contractStartDate)}
+                      </p>
+                    </CardContent>
+                  </Card>
+                </Link>
               ))}
             </div>
           )}
