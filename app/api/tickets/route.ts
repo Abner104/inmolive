@@ -53,11 +53,11 @@ export async function POST(req: NextRequest) {
   });
 
   if (unit) {
-    sendPushToUser(unit.property.userId, {
+    await sendPushToUser(unit.property.userId, {
       title: "Nuevo ticket de mantenimiento",
       body: `${tenant.fullName}: ${titulo}`,
       url: "/dashboard/tickets",
-    }).catch(() => {});
+    }).catch((err) => console.error("[ticket] error en sendPushToUser:", err));
   }
 
   return NextResponse.json(ticket, { status: 201 });

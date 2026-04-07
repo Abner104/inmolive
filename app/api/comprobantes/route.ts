@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
 
   if (cobro) {
     console.log("[comprobante] llamando sendPushToUser para userId:", cobro.property.userId);
-    sendPushToUser(cobro.property.userId, {
+    await sendPushToUser(cobro.property.userId, {
       title: "Comprobante recibido",
       body: `${cobro.tenant.fullName} subió un comprobante de pago.`,
       url: "/dashboard/cobros",
