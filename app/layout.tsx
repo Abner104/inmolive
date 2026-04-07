@@ -9,7 +9,7 @@ import { ProgressBar } from "@/components/progress-bar";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Inmolive",
+  title: "Inmio",
   description: "Mini SaaS inmobiliario para cobros y comprobantes",
   icons: { icon: "/logoinmio.png", apple: "/logoinmio.png" },
 };
