@@ -52,22 +52,13 @@ export async function POST(req: NextRequest) {
     include: { property: { include: { user: true } } },
   });
 
-  let waUrl: string | null = null;
-
   if (unit) {
     sendPushToUser(unit.property.userId, {
       title: "Nuevo ticket de mantenimiento",
       body: `${tenant.fullName}: ${titulo}`,
       url: "/dashboard/tickets",
     }).catch(() => {});
-
-    const adminPhone = unit.property.user.phone?.replace(/\D/g, "");
-    if (adminPhone) {
-      const appUrl = "https://inmio.vercel.app";
-      const msg = `🔧 *Nuevo reporte de mantenimiento*\n\nInquilino: *${tenant.fullName}*\nProblema: ${titulo}\n\nRevisalo aquí 👇 ${appUrl}/dashboard/tickets`;
-      waUrl = `https://wa.me/${adminPhone}?text=${encodeURIComponent(msg)}`;
-    }
   }
 
-  return NextResponse.json({ ...ticket, waUrl }, { status: 201 });
+  return NextResponse.json(ticket, { status: 201 });
 }
