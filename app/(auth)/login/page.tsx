@@ -65,6 +65,11 @@ function LoginForm() {
             <Label htmlFor="password">Contraseña</Label>
             <Input id="password" name="password" type="password" placeholder="••••••••" required />
           </div>
+          <div className="flex justify-end">
+            <Link href="/forgot-password" className="text-xs text-muted-foreground hover:text-foreground hover:underline">
+              ¿Olvidaste tu contraseña?
+            </Link>
+          </div>
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? "Ingresando..." : "Ingresar"}
           </Button>
