@@ -9,16 +9,17 @@ async function getUserId() {
 }
 
 // PATCH /api/unidades/[id]
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const userId = await getUserId();
   if (!userId) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 
-  const unidad = await prisma.unit.findFirst({ where: { id: params.id, property: { userId } } });
+  const unidad = await prisma.unit.findFirst({ where: { id, property: { userId } } });
   if (!unidad) return NextResponse.json({ error: "No encontrado" }, { status: 404 });
 
   const body = await req.json();
   const updated = await prisma.unit.update({
-    where: { id: params.id },
+    where: { id },
     data: {
       ...(body.nombre && { name: body.nombre }),
       ...(body.piso !== undefined && { floor: body.piso || null }),
@@ -32,13 +33,14 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 }
 
 // DELETE /api/unidades/[id]
-export async function DELETE(_req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const userId = await getUserId();
   if (!userId) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 
-  const unidad = await prisma.unit.findFirst({ where: { id: params.id, property: { userId } } });
+  const unidad = await prisma.unit.findFirst({ where: { id, property: { userId } } });
   if (!unidad) return NextResponse.json({ error: "No encontrado" }, { status: 404 });
 
-  await prisma.unit.delete({ where: { id: params.id } });
+  await prisma.unit.delete({ where: { id } });
   return NextResponse.json({ ok: true });
 }

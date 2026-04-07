@@ -9,20 +9,20 @@ async function getUserId() {
 }
 
 // PATCH /api/inquilinos/[id]
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const userId = await getUserId();
   if (!userId) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 
   const body = await req.json();
 
-  // Verificar que el inquilino pertenece al usuario
   const inquilino = await prisma.tenant.findFirst({
-    where: { id: params.id, unit: { property: { userId } } },
+    where: { id, unit: { property: { userId } } },
   });
   if (!inquilino) return NextResponse.json({ error: "No encontrado" }, { status: 404 });
 
   const updated = await prisma.tenant.update({
-    where: { id: params.id },
+    where: { id },
     data: {
       ...(body.nombreCompleto && { fullName: body.nombreCompleto }),
       ...(body.telefono && { phone: body.telefono }),
@@ -44,16 +44,17 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 }
 
 // DELETE /api/inquilinos/[id]
-export async function DELETE(_req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const userId = await getUserId();
   if (!userId) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 
   const inquilino = await prisma.tenant.findFirst({
-    where: { id: params.id, unit: { property: { userId } } },
+    where: { id, unit: { property: { userId } } },
   });
   if (!inquilino) return NextResponse.json({ error: "No encontrado" }, { status: 404 });
 
-  await prisma.tenant.delete({ where: { id: params.id } });
+  await prisma.tenant.delete({ where: { id } });
   await prisma.unit.update({
     where: { id: inquilino.unitId },
     data: { status: "AVAILABLE" },
