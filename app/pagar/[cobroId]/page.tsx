@@ -2,7 +2,7 @@ import { prisma } from "@/lib/db/prisma";
 import { notFound } from "next/navigation";
 import { PagarForm } from "./pagar-form";
 import { ReporteTicket } from "./reporte-ticket";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, XCircle } from "lucide-react";
 import { formatFecha } from "@/lib/utils/fecha";
 import Image from "next/image";
 
@@ -79,6 +79,21 @@ export default async function PagarPage({ params }: Props) {
             <span className="text-xl font-bold">{cobro.unit.currency} {cobro.amount.toLocaleString()}</span>
           </div>
         </div>
+
+        {/* Aviso comprobante rechazado */}
+        {cobro.paymentProof?.status === "REJECTED" && (
+          <div className="rounded-2xl border border-red-200 bg-red-50 dark:bg-red-950/30 dark:border-red-900 p-4 flex gap-3">
+            <XCircle className="h-5 w-5 text-red-500 shrink-0 mt-0.5" />
+            <div className="space-y-1">
+              <p className="text-sm font-semibold text-red-700 dark:text-red-400">Comprobante rechazado</p>
+              <p className="text-xs text-red-600 dark:text-red-500">
+                {cobro.paymentProof.comment
+                  ? cobro.paymentProof.comment
+                  : "Tu comprobante anterior no fue aceptado. Por favor subí uno nuevo."}
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Form de pago */}
         <PagarForm
